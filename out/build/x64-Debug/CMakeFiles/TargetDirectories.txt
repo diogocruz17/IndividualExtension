@@ -1,0 +1,10 @@
+C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Debug/CMakeFiles/VolVis.dir
+C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Debug/CMakeFiles/ImGuiWrapper.dir
+C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Debug/CMakeFiles/Viewer.dir
+C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Debug/CMakeFiles/test.dir
+C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Debug/integrity_tests/CMakeFiles/IntegrityTests.dir
+C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Debug/integrity_tests/CMakeFiles/test.dir
+C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Debug/integrity_tests/CMakeFiles/edit_cache.dir
+C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Debug/integrity_tests/CMakeFiles/rebuild_cache.dir
