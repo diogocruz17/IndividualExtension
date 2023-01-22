@@ -1,0 +1,106 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"jsonFile" : "directory-.-RelWithDebInfo-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						2,
+						3
+					]
+				},
+				{
+					"build" : "integrity_tests",
+					"jsonFile" : "directory-integrity_tests-RelWithDebInfo-cd8b70e5f7afe0347e79.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "integrity_tests",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "RelWithDebInfo",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1
+					],
+					"name" : "GLViewer",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ImGuiWrapper::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ImGuiWrapper-RelWithDebInfo-666d84f6b078deb10c22.json",
+					"name" : "ImGuiWrapper",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "IntegrityTests::@84c41ca8a0b3f4cd76ce",
+					"jsonFile" : "target-IntegrityTests-RelWithDebInfo-0098f500ede48c87a08e.json",
+					"name" : "IntegrityTests",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Viewer::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Viewer-RelWithDebInfo-49a4816cb1ce84e49c86.json",
+					"name" : "Viewer",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "VolVis::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-VolVis-RelWithDebInfo-10e8fb3ee880aa814acc.json",
+					"name" : "VolVis",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension/out/build/x64-Release",
+		"source" : "C:/Users/User/Documents/Delft/DataVis/Project/VolVis/IndividualExtension/IndividualExtension"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

@@ -193,19 +193,28 @@ glm::vec4 Renderer::traceRayISO(const Ray& ray, float sampleStep) const
         if (val >= isoVal) {
             if (m_config.volumeShading) {
                 glm::vec3 lighDirection = samplePos - m_pCamera->position();
-                float tBissection = bisectionAccuracy(ray, t - sampleStep , t, isoVal);
+                float tBissection = bisectionAccuracy(ray, t - sampleStep, t, isoVal);
                 samplePos = ray.origin + tBissection * ray.direction;
                 glm::vec3 shade = computePhongShading(isoColor, m_pGradientVolume->getGradientInterpolate(samplePos), lighDirection, lighDirection);
                 return glm::vec4(shade, 1.0f);
-            }
+            } else if (m_config.Warm2CoolShading) {
+                glm::vec3 lighDirection = samplePos - glm::vec3 { 128, 64, 128 }; // carp
+                // glm::vec3 lighDirection = samplePos - glm::vec3 { 128, 0, 90 }; // pork
+                glm::vec3 viewDirection = samplePos - m_pCamera->position();
+                float tBissection = bisectionAccuracy(ray, t - sampleStep, t, isoVal);
+                samplePos = ray.origin + tBissection * ray.direction;
+                glm::vec3 shade = computePhongShadingWarm2Cool(isoColor, m_pGradientVolume->getGradientInterpolate(samplePos), lighDirection, viewDirection, m_config.alphaValue, m_config.betaValue, m_config.warmColor, m_config.coolColor);
+                return glm::vec4(shade, 1.0f);
+            } 
             else {
                 return glm::vec4(isoColor, 1.0f);
-            }                  
+            }
         }
     }
     // If the ray never encounters the isovalue, return black
     return glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 }
+
 
 // ======= TODO: IMPLEMENT ========
 // Given that the iso value lies somewhere between t0 and t1, find a t for which the value
@@ -235,32 +244,82 @@ float Renderer::bisectionAccuracy(const Ray& ray, float t0, float t1, float isoV
     return initialT1;
 }
 
-// ======= TODO: IMPLEMENT ========
-// Compute Phong Shading given the voxel color (material color), the gradient, the light vector and view vector.
-// You can find out more about the Phong shading model at:
-// https://en.wikipedia.org/wiki/Phong_reflection_model
-//
-// Use the given color for the ambient/specular/diffuse (you are allowed to scale these constants by a scalar value).
-// You are free to choose any specular power that you'd like.
 glm::vec3 Renderer::computePhongShading(const glm::vec3& color, const volume::GradientVoxel& gradient, const glm::vec3& L, const glm::vec3& V)
 {
     glm::vec3 lighColor = glm::vec3(1.0f, 1.0f, 1.0f);
-    //Phong weights
+    // Phong weights
     float ka = 0.1f, kd = 0.7f, ks = 0.2f;
-    //specular reflection term
+    // specular reflection term
     int alpha = 100;
-    //cosine of the angle between the light director and normal to location
+    // cosine of the angle between the light director and normal to location
     float cosTheta = glm::dot(glm::normalize(glm::vec3(gradient.dir * gradient.magnitude)), glm::normalize(L));
-    //refletion of light on surface
+    // refletion of light on surface
     glm::vec3 reflection = glm::normalize(L) - 2 * (glm::dot(glm::normalize(L), glm::normalize(gradient.dir))) * glm::normalize(gradient.dir);
-    //cosine of the angle between the light reflection and visualization direction
+    // cosine of the angle between the light reflection and visualization direction
     float cosPhi = glm::dot(glm::normalize(reflection), glm::normalize(V));
 
     glm::vec3 ambient = ka * (color * lighColor);
     glm::vec3 diffuse = kd * (color * lighColor) * cosTheta;
     glm::vec3 specular = ks * (color * lighColor) * (std::powf(cosPhi, alpha));
 
-    glm::vec3 phongReflection = ambient + diffuse+ specular;
+    glm::vec3 phongReflection = ambient + diffuse + specular;
+
+    if (isnan(phongReflection[0]))
+        return color; // return glm::vec3{ 0.0f, 0.0f, 0.0f };
+
+    if (phongReflection[0] < 0)
+        phongReflection[0] = 0;
+    else if (phongReflection[0] > 1)
+        phongReflection[0] = 1;
+    if (phongReflection[1] < 0)
+        phongReflection[1] = 0;
+    else if (phongReflection[1] > 1)
+        phongReflection[1] = 1;
+    if (phongReflection[2] < 0)
+        phongReflection[2] = 0;
+    else if (phongReflection[2] > 1)
+        phongReflection[2] = 1;
+
+    return phongReflection;
+}
+
+
+// Compute Phong Shading with warm to cool color, given the voxel color (material color), the gradient, the light vector , view vector,
+// the ro and beta that affect the blending, the warm color and the cool color
+
+glm::vec3 Renderer::computePhongShadingWarm2Cool(const glm::vec3& color, const volume::GradientVoxel& gradient, const glm::vec3& L, const glm::vec3& V, float ro, float beta, const glm::vec4 warmColor, const glm::vec4 coolColor)
+{
+    glm::vec3 lightColor1 = coolColor;
+    glm::vec3 lightColor2 = warmColor;
+    //Phong weights
+    float ka = 0.1f, kd = 0.7f, ks = 0.2f;
+    //specular reflection term
+    int alpha = 100;
+
+    //cosine of the angle between the light directon from above and normal to location
+    float cosTheta1 = glm::dot(glm::normalize(glm::vec3(gradient.dir * gradient.magnitude)), glm::normalize(L));
+    // cosine of the angle between the light directon from below and normal to location
+    float cosTheta2 = glm::dot(glm::normalize(glm::vec3(gradient.dir * gradient.magnitude)), glm::normalize(-L));
+
+    glm::vec3 ambient1 = ka * (color * lightColor1);
+
+    glm::vec3 ambient2 = ka * (color * lightColor2);
+
+    glm::vec3 ambient = ambient1 + ambient2;
+
+    glm::vec3 kcool = lightColor1 + ro * kd;
+    glm::vec3 kwarm = lightColor2 + beta * kd;
+
+    lightColor1 = (kwarm - kcool) / 2.0f;
+    lightColor2 = (kcool - kwarm) / 2.0f;
+
+    glm::vec3 ambientLight = (kcool + kwarm) / 2.0f;
+
+    glm::vec3 diffuse1 = kd * (color * lightColor1) * cosTheta1;
+    
+    glm::vec3 diffuse2 = kd * (color * lightColor2) * cosTheta2;
+
+    glm::vec3 phongReflection = ambientLight + diffuse1 + diffuse2;
 
     if (isnan(phongReflection[0])) return color; //return glm::vec3{ 0.0f, 0.0f, 0.0f };
 

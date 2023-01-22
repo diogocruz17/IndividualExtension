@@ -1,9 +1,0 @@
-Package: ms-gsl
-Version: 3.1.0
-Port-Version: 1
-Architecture: x64-windows
-Multi-Arch: same
-Abi: b962fbb8141aa61f44ca5c05097ab4580e5eb00e1a6ea96025d53b63583725ec
-Description: Microsoft implementation of the Guidelines Support Library
-Type: Port
-Status: install ok installed

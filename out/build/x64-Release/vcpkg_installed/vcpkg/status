@@ -1,0 +1,127 @@
+Package: vcpkg-cmake-config
+Version: 2021-05-22
+Port-Version: 1
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 24de513b41403a5d8e2b566d39ea42f380bd7534cf72acff175429aba6faee79
+Type: Port
+Status: install ok installed
+
+Package: vcpkg-cmake
+Version: 2021-07-30
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 676c94208404fe950a5497c0c008dd1ba811b642607abca4b21156721b8df2d4
+Type: Port
+Status: install ok installed
+
+Package: catch2
+Version: 2.13.7
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 1f46c44a713a9740024963636b52a036b537dac21666333ece815109d14c7908
+Description: A modern, header-only test framework for unit testing.
+Type: Port
+Status: install ok installed
+
+Package: fmt
+Version: 8.0.1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 14da218bd76a7229ae1181a06394826ea483cf658d6b3b75fc11db299d4ecc1b
+Description: Formatting library for C++. It can be used as a safe alternative to printf or as a fast alternative to IOStreams.
+Type: Port
+Status: install ok installed
+
+Package: opengl
+Version: 0.0
+Port-Version: 9
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 0270d593b983e271fce0f3ece524f716c6d670e03447a249c7cae1d23f16739d
+Description: Open Graphics Library (OpenGL)[3][4][5] is a cross-language, cross-platform application programming interface (API) for rendering 2D and 3D vector graphics.
+Type: Port
+Status: install ok installed
+
+Package: glew
+Version: 2.2.0
+Depends: opengl, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 913a8202bc3ce67ba04473936ac73b7bb439224ac92e23809bd4717203461ba8
+Description: The OpenGL Extension Wrangler Library (GLEW) is a cross-platform open-source C/C++ extension loading library.
+Type: Port
+Status: install ok installed
+
+Package: glfw3
+Version: 3.3.4
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 40f9f3c852f6f66701b10ab36a935c1f3943cc46734ef7cc84a0e3cbbd6a9b0a
+Description: GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan application development. It provides a simple, platform-independent API for creating windows, contexts and surfaces, reading input, handling events, etc.
+Type: Port
+Status: install ok installed
+
+Package: glm
+Version: 0.9.9.8
+Port-Version: 1
+Architecture: x64-windows
+Multi-Arch: same
+Abi: a388521533c5985659a3adc0294609ec280ba4a2eaef30ca97b159dc3a344a31
+Description: OpenGL Mathematics (GLM)
+Type: Port
+Status: install ok installed
+
+Package: imgui
+Version: 1.84.2
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 850ae5171c96406ee5b182a3a6768558d17a4b862207a46e81f7b2c713b54dcf
+Description: Bloat-free Immediate Mode Graphical User interface for C++ with minimal dependencies.
+Type: Port
+Status: install ok installed
+
+Package: ms-gsl
+Version: 3.1.0
+Port-Version: 1
+Architecture: x64-windows
+Multi-Arch: same
+Abi: b962fbb8141aa61f44ca5c05097ab4580e5eb00e1a6ea96025d53b63583725ec
+Description: Microsoft implementation of the Guidelines Support Library
+Type: Port
+Status: install ok installed
+
+Package: nativefiledialog
+Version: 2019-08-28
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 81174e9d4378ad6eb300d4ed18407eb6b4a43f1dd2da19a9dd02ac2eca599c1c
+Description: A tiny, neat C library that portably invokes native file open and save dialogs
+Type: Port
+Status: install ok installed
+
+Package: stb
+Version: 2020-09-14
+Port-Version: 1
+Architecture: x64-windows
+Multi-Arch: same
+Abi: ac5c232b7cf5045d0e745212dee07bbaf4a6594286504c6092558d1cb4f368d2
+Description: public domain header-only libraries
+Type: Port
+Status: install ok installed
+
+Package: tbb
+Version: 2020_U3
+Port-Version: 6
+Architecture: x64-windows
+Multi-Arch: same
+Abi: 2c48d66644d114a9518d133de5bd310d28d83b5452ad2995bd2da52fa99d31e0
+Description: Intel's Threading Building Blocks.
+Type: Port
+Status: install ok installed
+

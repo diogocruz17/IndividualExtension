@@ -6,6 +6,11 @@
 #include <iostream>
 #include <nfd.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
+
 namespace ui {
 
 Menu::Menu(const glm::ivec2& baseRenderResolution)
@@ -53,6 +58,7 @@ void Menu::setLoadedVolume(const volume::Volume& volume, const volume::GradientV
     m_tfWidget = TransferFunctionWidget(volume);
     m_tf2DWidget = TransferFunction2DWidget(volume, gradientVolume);
 
+    //m_Warm2CoolWidget->updateRenderConfig(m_renderConfig);
     m_tfWidget->updateRenderConfig(m_renderConfig);
     m_tf2DWidget->updateRenderConfig(m_renderConfig);
 
@@ -139,6 +145,10 @@ void Menu::showRayCastTab(std::chrono::duration<double> renderTime)
 
         ImGui::NewLine();
 
+        ImGui::Checkbox("Warm to Cool Volume Shading", &m_renderConfig.Warm2CoolShading);
+
+        ImGui::NewLine();
+
         ImGui::DragFloat("Iso Value", &m_renderConfig.isoValue, 0.1f, 0.0f, float(m_volumeMax));
 
         ImGui::NewLine();
@@ -148,14 +158,33 @@ void Menu::showRayCastTab(std::chrono::duration<double> renderTime)
 
         ImGui::NewLine();
 
+        ImGui::DragFloat("Alpha Value", &m_renderConfig.alphaValue, 0.0025f, 0.25f, 2.0f);
+       
+        ImGui::NewLine();
+
+        ImGui::DragFloat("Beta Value", &m_renderConfig.betaValue, 0.0025f, 0.25f, 2.0f);
+
+        ImGui::NewLine();
+        
         int* pInterpolationModeInt = reinterpret_cast<int*>(&m_interpolationMode);
         ImGui::Text("Interpolation:");
         ImGui::RadioButton("Nearest Neighbour", pInterpolationModeInt, int(volume::InterpolationMode::NearestNeighbour));
         ImGui::RadioButton("Linear", pInterpolationModeInt, int(volume::InterpolationMode::Linear));
         ImGui::RadioButton("TriCubic", pInterpolationModeInt, int(volume::InterpolationMode::Cubic));
 
+        ImGui::NewLine();
+
+        m_tf2DWidget->drawWarm2Cool();
+        m_tf2DWidget->updateRenderConfigWarm2Cool(m_renderConfig);
+
         ImGui::EndTabItem();
+
     }
+}
+
+static glm::vec2 ImToGlm(const ImVec2& v)
+{
+    return glm::vec2(v.x, v.y);
 }
 
 // This renders the 1D Transfer Function Widget.

@@ -10,6 +10,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace render {
 class Renderer;
@@ -54,6 +56,8 @@ private:
 
     glm::ivec2 m_baseRenderResolution;
     float m_resolutionScale { 1.0f };
+    float m_alphaValue { 0.2f };
+    float m_betaValue { 0.6f };
     render::RenderConfig m_renderConfig {};
     volume::InterpolationMode m_interpolationMode { volume::InterpolationMode::NearestNeighbour };
 

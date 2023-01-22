@@ -11,7 +11,8 @@ enum class RenderMode {
     RenderMIP,
     RenderIso,
     RenderComposite,
-    RenderTF2D
+    RenderTF2D,
+    RenderWarm2Cool
 };
 
 struct RenderConfig {
@@ -19,7 +20,13 @@ struct RenderConfig {
     glm::ivec2 renderResolution;
 
     bool volumeShading { false };
+    bool Warm2CoolShading { false };
     float isoValue { 95.0f };
+    float alphaValue { 0.2f };
+    float betaValue { 0.6f };
+
+    glm::vec4 warmColor;
+    glm::vec4 coolColor;
 
     // 1D transfer function.
     std::array<glm::vec4, 256> tfColorMap;

@@ -13,12 +13,16 @@ public:
     TransferFunction2DWidget(const volume::Volume& volume, const volume::GradientVolume& gradient);
 
     void draw();
+    void drawWarm2Cool();
     void updateRenderConfig(render::RenderConfig& renderConfig);
+    void updateRenderConfigWarm2Cool(render::RenderConfig& renderConfig);
 
 private:
     float m_intensity, m_maxIntensity;
     float m_radius;
     glm::vec4 m_color;
+    glm::vec4 m_colorWarm;
+    glm::vec4 m_colorCool;
 
     int m_interactingPoint;
     GLuint m_histogramImg;

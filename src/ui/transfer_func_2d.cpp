@@ -25,6 +25,8 @@ TransferFunction2DWidget::TransferFunction2DWidget(const volume::Volume& volume,
     , m_maxIntensity(volume.maximum())
     , m_radius(38.0f)
     , m_color(0.0f, 0.8f, 0.6f, 0.3f)
+    , m_colorWarm(0.4f, 0.4f, 0.0f, 1.0f)
+    , m_colorCool(0.0f, 0.0f, 0.15f, 1.0f)
     , m_interactingPoint(-1)
     , m_histogramImg(0)
 {
@@ -193,11 +195,46 @@ void TransferFunction2DWidget::draw()
     ImGui::ColorPicker4("Color", glm::value_ptr(m_color));
 }
 
+// Draw the widget to pick warm and cool colors for Warm to Cool Shading.
+//Should be implemented in a diferent file. Due to linking problems it was implemented here.
+void TransferFunction2DWidget::drawWarm2Cool()
+{
+    const ImGuiIO& io = ImGui::GetIO();
+
+    ImGui::Text("Choose Warm Color");
+
+    // Histogram image is positioned to the right of the content region.
+    const glm::vec2 canvasSize { widgetSize.x, widgetSize.y - 20 };
+    glm::vec2 canvasPos = ImToGlm(ImGui::GetCursorScreenPos()); // this is the imgui draw cursor, not mouse cursor
+    const float xOffset = (ImToGlm(ImGui::GetContentRegionAvail()).x - canvasSize.x);
+    canvasPos.x += xOffset; // center widget
+
+    
+
+    ImGui::NewLine();
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + xOffset / 2 );
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.35f);
+    ImGui::ColorPicker4("Color", glm::value_ptr(m_colorWarm));
+
+    ImGui::NewLine();
+    ImGui::Text("Choose Cool Color");
+    ImGui::NewLine();
+    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + xOffset / 2);
+    ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.35f);
+    ImGui::ColorPicker4("Color", glm::value_ptr(m_colorCool));
+}
+
 void TransferFunction2DWidget::updateRenderConfig(render::RenderConfig& renderConfig)
 {
     renderConfig.TF2DIntensity = m_intensity;
     renderConfig.TF2DRadius = m_radius;
     renderConfig.TF2DColor = m_color;
+}
+
+void TransferFunction2DWidget::updateRenderConfigWarm2Cool(render::RenderConfig& renderConfig)
+{
+    renderConfig.warmColor = m_colorWarm;
+    renderConfig.coolColor = m_colorCool;
 }
 }
 
