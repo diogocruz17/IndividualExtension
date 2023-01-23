@@ -150,20 +150,28 @@ void Menu::showRayCastTab(std::chrono::duration<double> renderTime)
 
         ImGui::NewLine();
 
+        ImGui::PushItemWidth(100);
         ImGui::DragFloat("Iso Value", &m_renderConfig.isoValue, 0.1f, 0.0f, float(m_volumeMax));
 
         ImGui::NewLine();
 
+        ImGui::PushItemWidth(100);
         ImGui::DragFloat("Resolution scale", &m_resolutionScale, 0.0025f, 0.25f, 2.0f);
         m_renderConfig.renderResolution = glm::ivec2(glm::vec2(m_baseRenderResolution) * m_resolutionScale);
 
         ImGui::NewLine();
 
-        ImGui::DragFloat("Alpha Value", &m_renderConfig.alphaValue, 0.0025f, 0.25f, 2.0f);
+        ImGui::PushItemWidth(100);
+        ImGui::DragFloat("Warm to Cool Shading - Alpha Value", &m_renderConfig.alphaValue, 0.0025f, 0.25f, 2.0f);
        
         ImGui::NewLine();
 
-        ImGui::DragFloat("Beta Value", &m_renderConfig.betaValue, 0.0025f, 0.25f, 2.0f);
+        ImGui::PushItemWidth(100);
+        ImGui::DragFloat("Warm to Cool Shading - Beta Value", &m_renderConfig.betaValue, 0.0025f, 0.25f, 2.0f);
+
+        ImGui::NewLine();
+        ImGui::PushItemWidth(250);
+        ImGui::SliderFloat("MIDA - Gamma Value", &m_renderConfig.gamma, -1, 1);
 
         ImGui::NewLine();
         
@@ -174,11 +182,7 @@ void Menu::showRayCastTab(std::chrono::duration<double> renderTime)
         ImGui::RadioButton("TriCubic", pInterpolationModeInt, int(volume::InterpolationMode::Cubic));
 
         ImGui::NewLine();
-
-        ImGui::SliderFloat("Gamma Value - Transition between DVR(-1), MIDA(0) and MIP(1)", &m_renderConfig.gamma, -1, 1);
-
-        ImGui::NewLine();
-
+        
         m_tf2DWidget->drawWarm2Cool();
         m_tf2DWidget->updateRenderConfigWarm2Cool(m_renderConfig);
 
