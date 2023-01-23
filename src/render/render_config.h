@@ -10,6 +10,7 @@ enum class RenderMode {
     RenderSlicer,
     RenderMIP,
     RenderIso,
+    RenderMIDA,
     RenderComposite,
     RenderTF2D,
     RenderWarm2Cool
@@ -21,9 +22,11 @@ struct RenderConfig {
 
     bool volumeShading { false };
     bool Warm2CoolShading { false };
+    bool MIDA { false };
     float isoValue { 95.0f };
     float alphaValue { 0.2f };
     float betaValue { 0.6f };
+    float gamma { 0.0f };
 
     glm::vec4 warmColor;
     glm::vec4 coolColor;

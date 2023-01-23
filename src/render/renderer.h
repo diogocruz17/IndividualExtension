@@ -40,6 +40,7 @@ protected:
     // These functions will be automatically tested.
     glm::vec4 traceRaySlice(const Ray& ray, const glm::vec3& volumeCenter, const glm::vec3& planeNormal) const;
     glm::vec4 traceRayMIP(const Ray& ray, float sampleStep) const;
+    glm::vec4 traceRayMIDA(const Ray& ray, float sampleStep) const;
     glm::vec4 traceRayISO(const Ray& ray, float sampleStep) const;
     glm::vec4 traceRayComposite(const Ray& ray, float sampleStep) const;
     glm::vec4 traceRayTF2D(const Ray& ray, float sampleStep) const;
@@ -48,6 +49,8 @@ protected:
 
     static glm::vec3 computePhongShading(const glm::vec3& color, const volume::GradientVoxel& gradient, const glm::vec3& lightDirection, const glm::vec3& viewDirection);
     static glm::vec3 computePhongShadingWarm2Cool(const glm::vec3& color, const volume::GradientVoxel& gradient, const glm::vec3& lightDirection, const glm::vec3& viewDirection, float ro, float beta, const glm::vec4 warmColor, const glm::vec4 coolColor);
+
+    static glm::vec4 interpolateColor(const glm::vec4 color1, const glm::vec4 color2, float factor); 
 
 private:
     void resizeImage(const glm::ivec2& resolution);

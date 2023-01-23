@@ -135,6 +135,7 @@ void Menu::showRayCastTab(std::chrono::duration<double> renderTime)
         ImGui::Text("Render Mode:");
         ImGui::RadioButton("Slicer", pRenderModeInt, int(render::RenderMode::RenderSlicer));
         ImGui::RadioButton("MIP", pRenderModeInt, int(render::RenderMode::RenderMIP));
+        ImGui::RadioButton("MIDA", pRenderModeInt, int(render::RenderMode::RenderMIDA));
         ImGui::RadioButton("IsoSurface Rendering", pRenderModeInt, int(render::RenderMode::RenderIso));
         ImGui::RadioButton("Compositing", pRenderModeInt, int(render::RenderMode::RenderComposite));
         ImGui::RadioButton("2D Transfer Function", pRenderModeInt, int(render::RenderMode::RenderTF2D));
@@ -171,6 +172,10 @@ void Menu::showRayCastTab(std::chrono::duration<double> renderTime)
         ImGui::RadioButton("Nearest Neighbour", pInterpolationModeInt, int(volume::InterpolationMode::NearestNeighbour));
         ImGui::RadioButton("Linear", pInterpolationModeInt, int(volume::InterpolationMode::Linear));
         ImGui::RadioButton("TriCubic", pInterpolationModeInt, int(volume::InterpolationMode::Cubic));
+
+        ImGui::NewLine();
+
+        ImGui::SliderFloat("Gamma Value - Transition between DVR(-1), MIDA(0) and MIP(1)", &m_renderConfig.gamma, -1, 1);
 
         ImGui::NewLine();
 

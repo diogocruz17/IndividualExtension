@@ -109,6 +109,10 @@ void Renderer::render()
                 color = traceRayMIP(ray, sampleStep);
                 break;
             }
+            case RenderMode::RenderMIDA: {
+                color = traceRayMIDA(ray, sampleStep);
+                break;
+            }
             case RenderMode::RenderComposite: {
                 color = traceRayComposite(ray, sampleStep);
                 break;
@@ -165,6 +169,67 @@ glm::vec4 Renderer::traceRayMIP(const Ray& ray, float sampleStep) const
 
     // Normalize the result to a range of [0 to mpVolume->maximum()].
     return glm::vec4(glm::vec3(maxVal) / m_pVolume->maximum(), 1.0f);
+}
+
+// Function that implements maximum-intensity-difference-accumulation (MIDA) raycasting.
+// It returns the color assigned to a ray/pixel given it's origin, direction and the distances
+// at which it enters/exits the volume (ray.tmin & ray.tmax respectively).
+// The ray must be sampled with a distance defined by the sampleStep
+glm::vec4 Renderer::traceRayMIDA(const Ray& ray, float sampleStep) const
+{
+    float maxVal = 0.0f, opacity = 0.0f, delta = 0.0f, beta = 0.0f;
+    glm::vec3 color = { 0.0f, 0.0f, 0.0f };
+
+    // Incrementing samplePos directly instead of recomputing it each frame gives a measureable speed-up.
+    glm::vec3 samplePos = ray.origin + ray.tmin * ray.direction;
+    const glm::vec3 increment = sampleStep * ray.direction;
+    for (float t = ray.tmin; t <= ray.tmax; t += sampleStep, samplePos += increment) {
+        const float val = m_pVolume->getSampleInterpolate(samplePos) / m_pVolume->maximum();
+        if (val > maxVal) {
+            glm::vec4 transferFunction = getTFValue(m_pVolume->getSampleInterpolate(samplePos));
+            glm::vec3 colorAtSample = { transferFunction[0], transferFunction[1], transferFunction[2] };
+            float opacityAtSample = transferFunction[3];
+            delta = val - maxVal;
+            maxVal = val;
+            if (m_config.gamma <= 0) {
+                beta = 1 - delta * (1 + m_config.gamma);
+                color = beta * color + (1 - (beta * opacity)) * colorAtSample * opacityAtSample;
+                opacity = beta * opacity + (1 - (beta * opacity)) * opacityAtSample;
+            } else {
+                beta = 1 - delta;
+                color = beta * color + (1 - (beta * opacity)) * colorAtSample * opacityAtSample;
+                opacity = beta * opacity + (1 - (beta * opacity)) * opacityAtSample;
+            }
+            
+        }
+    }
+
+    if (m_config.gamma > 0) {
+        glm::vec4 interpolatedColor = interpolateColor(glm::vec4 { color, opacity }, glm::vec4(glm::vec3(maxVal), 1.0f), m_config.gamma);
+        color[0] = interpolatedColor[0];
+        color[1] = interpolatedColor[1];
+        color[2] = interpolatedColor[2];
+        opacity = interpolatedColor[3];
+
+        return glm::vec4(color, opacity);
+    } else {
+        return glm::vec4(color, opacity);
+    }
+
+}
+
+glm::vec4 Renderer::interpolateColor(glm::vec4 color1, glm::vec4 color2, float factor) 
+{
+    glm::vec4 newColor = {};
+    //float color1OpacityWeight = 1; //color1[3] / (color1[3] + color2[3]);
+    //float color2OpacityWeight = 1; //color2[3] / (color1[3] + color2[3]);
+
+    newColor[0] = color1[0] * (1 - factor) + color2[0] * factor;
+    newColor[1] = color1[1] * (1 - factor) + color2[1] * factor;
+    newColor[2] = color1[2] * (1 - factor) + color2[2] * factor;
+    newColor[3] = color1[3] * (1 - factor) + color2[3] * factor;
+
+    return newColor;
 }
 
 // ======= TODO: IMPLEMENT ========
@@ -341,7 +406,6 @@ glm::vec4 Renderer::traceRayComposite(const Ray& ray, float sampleStep) const
     // Incrementing samplePos directly instead of recomputing it each frame gives a measureable speed-up.
     glm::vec3 samplePos = ray.origin + ray.tmin * ray.direction;
     const glm::vec3 increment = sampleStep * ray.direction;
-
     glm::vec4 composite = {0.0f, 0.0f, 0.0f, 0.0f}, C = {};
 
     for (float t = ray.tmin; t <= ray.tmax; t += sampleStep, samplePos += increment) {
