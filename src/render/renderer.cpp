@@ -191,19 +191,23 @@ glm::vec4 Renderer::traceRayMIDA(const Ray& ray, float sampleStep) const
             float opacityAtSample = transferFunction[3];
             delta = val - maxVal;
             maxVal = val;
+            //Transition between DVR and MIDA
             if (m_config.gamma <= 0) {
-                beta = 1 - delta * (1 + m_config.gamma);
+                //beta = 1 - (delta * (1 + m_config.gamma));
+                beta = 1.0f;
                 color = beta * color + (1 - (beta * opacity)) * colorAtSample * opacityAtSample;
                 opacity = beta * opacity + (1 - (beta * opacity)) * opacityAtSample;
             } else {
+                //Transition between MIDA and MIP
                 beta = 1 - delta;
                 color = beta * color + (1 - (beta * opacity)) * colorAtSample * opacityAtSample;
                 opacity = beta * opacity + (1 - (beta * opacity)) * opacityAtSample;
-            }
-            
+            }   
         }
     }
 
+    // If in the region of transition between MIDA and MIP, final accumulated color is interpolated with the color of the
+    //maximum value after ray is transversed, with gamma as interpolation weight.
     if (m_config.gamma > 0) {
         glm::vec4 interpolatedColor = interpolateColor(glm::vec4 { color, opacity }, glm::vec4(glm::vec3(maxVal), 1.0f), m_config.gamma);
         color[0] = interpolatedColor[0];
@@ -218,15 +222,15 @@ glm::vec4 Renderer::traceRayMIDA(const Ray& ray, float sampleStep) const
 
 }
 
+// This functions interpolates two opacity weighted colors according to a factor
+// Returns the new color + opacity.
 glm::vec4 Renderer::interpolateColor(glm::vec4 color1, glm::vec4 color2, float factor) 
 {
     glm::vec4 newColor = {};
-    //float color1OpacityWeight = 1; //color1[3] / (color1[3] + color2[3]);
-    //float color2OpacityWeight = 1; //color2[3] / (color1[3] + color2[3]);
 
-    newColor[0] = color1[0] * (1 - factor) + color2[0] * factor;
-    newColor[1] = color1[1] * (1 - factor) + color2[1] * factor;
-    newColor[2] = color1[2] * (1 - factor) + color2[2] * factor;
+    newColor[0] = (color1[0] * (color1[3]) * (1 - factor) + color2[0] * (color2[3]) * factor) / ((color1[3] * (1 - factor) + color2[3] * factor));
+    newColor[1] = (color1[1] * (color1[3]) * (1 - factor) + color2[1] * (color2[3]) * factor) / ((color1[3] * (1 - factor) + color2[3] * factor));
+    newColor[2] = (color1[2] * (color1[3]) * (1 - factor) + color2[2] * (color2[3]) * factor) / ((color1[3] * (1 - factor) + color2[3] * factor));
     newColor[3] = color1[3] * (1 - factor) + color2[3] * factor;
 
     return newColor;
