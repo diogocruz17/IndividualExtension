@@ -196,7 +196,7 @@ void TransferFunction2DWidget::draw()
 }
 
 // Draw the widget to pick warm and cool colors for Warm to Cool Shading.
-//Should be implemented in a diferent file. Due to linking problems it was implemented here.
+// Should be implemented in a diferent file. Due to linking problems it was implemented here.
 void TransferFunction2DWidget::drawWarm2Cool()
 {
     const ImGuiIO& io = ImGui::GetIO();
@@ -214,14 +214,14 @@ void TransferFunction2DWidget::drawWarm2Cool()
     ImGui::NewLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + xOffset / 2 );
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.35f);
-    ImGui::ColorPicker4("Color", glm::value_ptr(m_colorWarm));
+    ImGui::ColorPicker4("ColorWarm", glm::value_ptr(m_colorWarm));
 
     ImGui::NewLine();
     ImGui::Text("Choose Cool Color");
     ImGui::NewLine();
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + xOffset / 2);
     ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.35f);
-    ImGui::ColorPicker4("Color", glm::value_ptr(m_colorCool));
+    ImGui::ColorPicker4("ColorCool", glm::value_ptr(m_colorCool));
 }
 
 void TransferFunction2DWidget::updateRenderConfig(render::RenderConfig& renderConfig)

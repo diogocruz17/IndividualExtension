@@ -185,24 +185,28 @@ glm::vec4 Renderer::traceRayMIDA(const Ray& ray, float sampleStep) const
     const glm::vec3 increment = sampleStep * ray.direction;
     for (float t = ray.tmin; t <= ray.tmax; t += sampleStep, samplePos += increment) {
         const float val = m_pVolume->getSampleInterpolate(samplePos) / m_pVolume->maximum();
+        //if new max value is found
         if (val > maxVal) {
+            //color from transfer function
             glm::vec4 transferFunction = getTFValue(m_pVolume->getSampleInterpolate(samplePos));
             glm::vec3 colorAtSample = { transferFunction[0], transferFunction[1], transferFunction[2] };
             float opacityAtSample = transferFunction[3];
+            //the bigger the increase in the max value, the more visible it is
             delta = val - maxVal;
             maxVal = val;
-            //Transition between DVR and MIDA
+            
+            /* Transition between DVR and MIDA
             if (m_config.gamma <= 0) {
-                //beta = 1 - (delta * (1 + m_config.gamma));
-                beta = 1.0f;
+                beta = 1 - (delta * (1 + m_config.gamma));             
                 color = beta * color + (1 - (beta * opacity)) * colorAtSample * opacityAtSample;
                 opacity = beta * opacity + (1 - (beta * opacity)) * opacityAtSample;
-            } else {
-                //Transition between MIDA and MIP
-                beta = 1 - delta;
-                color = beta * color + (1 - (beta * opacity)) * colorAtSample * opacityAtSample;
-                opacity = beta * opacity + (1 - (beta * opacity)) * opacityAtSample;
-            }   
+            } else {*/
+
+            //Transition between MIDA and MIP
+            beta = 1 - delta;
+            color = beta * color + (1 - (beta * opacity)) * colorAtSample * opacityAtSample;
+            opacity = beta * opacity + (1 - (beta * opacity)) * opacityAtSample;
+            //}   
         }
     }
 
@@ -210,12 +214,7 @@ glm::vec4 Renderer::traceRayMIDA(const Ray& ray, float sampleStep) const
     //maximum value after ray is transversed, with gamma as interpolation weight.
     if (m_config.gamma > 0) {
         glm::vec4 interpolatedColor = interpolateColor(glm::vec4 { color, opacity }, glm::vec4(glm::vec3(maxVal), 1.0f), m_config.gamma);
-        color[0] = interpolatedColor[0];
-        color[1] = interpolatedColor[1];
-        color[2] = interpolatedColor[2];
-        opacity = interpolatedColor[3];
-
-        return glm::vec4(color, opacity);
+        return interpolatedColor;
     } else {
         return glm::vec4(color, opacity);
     }
@@ -261,14 +260,17 @@ glm::vec4 Renderer::traceRayISO(const Ray& ray, float sampleStep) const
         // If the ray hits the isovalue, return the isocolor
         if (val >= isoVal) {
             if (m_config.volumeShading) {
+                //Regular volume Shading
                 glm::vec3 lighDirection = samplePos - m_pCamera->position();
                 float tBissection = bisectionAccuracy(ray, t - sampleStep, t, isoVal);
                 samplePos = ray.origin + tBissection * ray.direction;
                 glm::vec3 shade = computePhongShading(isoColor, m_pGradientVolume->getGradientInterpolate(samplePos), lighDirection, lighDirection);
                 return glm::vec4(shade, 1.0f);
             } else if (m_config.Warm2CoolShading) {
+                //Warm to Cool Shading
+                //position of light is hardcoded to be on top of object and below
                 glm::vec3 lighDirection = samplePos - glm::vec3 { 128, 64, 128 }; // carp
-                // glm::vec3 lighDirection = samplePos - glm::vec3 { 128, 0, 90 }; // pork
+                //glm::vec3 lighDirection = samplePos - glm::vec3 { 128, 0, 90 }; // pork
                 glm::vec3 viewDirection = samplePos - m_pCamera->position();
                 float tBissection = bisectionAccuracy(ray, t - sampleStep, t, isoVal);
                 samplePos = ray.origin + tBissection * ray.direction;
@@ -354,41 +356,33 @@ glm::vec3 Renderer::computePhongShading(const glm::vec3& color, const volume::Gr
 
 
 // Compute Phong Shading with warm to cool color, given the voxel color (material color), the gradient, the light vector , view vector,
-// the ro and beta that affect the blending, the warm color and the cool color
-
+// the ro and beta that affect the blending, the warm color and the cool color.
 glm::vec3 Renderer::computePhongShadingWarm2Cool(const glm::vec3& color, const volume::GradientVoxel& gradient, const glm::vec3& L, const glm::vec3& V, float ro, float beta, const glm::vec4 warmColor, const glm::vec4 coolColor)
 {
-    glm::vec3 lightColor1 = coolColor;
-    glm::vec3 lightColor2 = warmColor;
+    //Warm and Cool Color from GUI
+    glm::vec3 lightColorCool = coolColor;
+    glm::vec3 lightColorWarm = warmColor;
     //Phong weights
-    float ka = 0.1f, kd = 0.7f, ks = 0.2f;
-    //specular reflection term
-    int alpha = 100;
+    float ka = 0.1f, kd = 0.7f;
 
     //cosine of the angle between the light directon from above and normal to location
     float cosTheta1 = glm::dot(glm::normalize(glm::vec3(gradient.dir * gradient.magnitude)), glm::normalize(L));
     // cosine of the angle between the light directon from below and normal to location
     float cosTheta2 = glm::dot(glm::normalize(glm::vec3(gradient.dir * gradient.magnitude)), glm::normalize(-L));
 
-    glm::vec3 ambient1 = ka * (color * lightColor1);
+    //calculate k constants according to parameters from GUI
+    glm::vec3 kcool = lightColorCool + ro * kd;
+    glm::vec3 kwarm = lightColorWarm + beta * kd;
 
-    glm::vec3 ambient2 = ka * (color * lightColor2);
-
-    glm::vec3 ambient = ambient1 + ambient2;
-
-    glm::vec3 kcool = lightColor1 + ro * kd;
-    glm::vec3 kwarm = lightColor2 + beta * kd;
-
-    lightColor1 = (kwarm - kcool) / 2.0f;
-    lightColor2 = (kcool - kwarm) / 2.0f;
+    lightColorCool = (kwarm - kcool) / 2.0f;
+    lightColorWarm = (kcool - kwarm) / 2.0f;
 
     glm::vec3 ambientLight = (kcool + kwarm) / 2.0f;
 
-    glm::vec3 diffuse1 = kd * (color * lightColor1) * cosTheta1;
-    
-    glm::vec3 diffuse2 = kd * (color * lightColor2) * cosTheta2;
+    glm::vec3 diffuseCool = kd * (color * lightColorCool) * cosTheta1;
+    glm::vec3 diffuseWarm = kd * (color * lightColorWarm) * cosTheta2;
 
-    glm::vec3 phongReflection = ambientLight + diffuse1 + diffuse2;
+    glm::vec3 phongReflection = ambientLight + diffuseCool + diffuseWarm;
 
     if (isnan(phongReflection[0])) return color; //return glm::vec3{ 0.0f, 0.0f, 0.0f };
 

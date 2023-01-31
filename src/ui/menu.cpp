@@ -171,7 +171,7 @@ void Menu::showRayCastTab(std::chrono::duration<double> renderTime)
 
         ImGui::NewLine();
         ImGui::PushItemWidth(250);
-        ImGui::SliderFloat("MIDA - Gamma Value", &m_renderConfig.gamma, -1, 1);
+        ImGui::SliderFloat("MIDA - Gamma Value", &m_renderConfig.gamma, 0, 1);
 
         ImGui::NewLine();
         
